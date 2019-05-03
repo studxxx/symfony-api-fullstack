@@ -3,7 +3,7 @@
 namespace App\Serializer;
 
 use App\Entity\User;
-use Symfony\Component\Security\Csrf\TokenStorage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Serializer\Normalizer\ContextAwareNormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 use Symfony\Component\Serializer\SerializerAwareInterface;
@@ -44,9 +44,13 @@ class UserAttributeNormalizer implements ContextAwareNormalizerInterface, Serial
         return $this->passOn($object, $format, $context);
     }
 
+    /**
+     * @param User $object
+     * @return bool
+     */
     private function isUserHimself($object): bool
     {
-        $object->getUsername() === $this->tokenStorage->getToken()->getUsername();
+        return $object->getUsername() === $this->tokenStorage->getToken()->getUsername();
     }
 
     private function passOn($object, $format, array $context)
