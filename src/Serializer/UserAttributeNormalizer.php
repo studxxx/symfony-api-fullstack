@@ -5,7 +5,7 @@ namespace App\Serializer;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Serializer\Normalizer\ContextAwareNormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerAwareInterface;
 use Symfony\Component\Serializer\SerializerAwareTrait;
 
@@ -55,10 +55,10 @@ class UserAttributeNormalizer implements ContextAwareNormalizerInterface, Serial
 
     private function passOn($object, $format, array $context)
     {
-        if (!$this->serializer instanceof NormalizableInterface) {
+        if (!$this->serializer instanceof NormalizerInterface) {
             throw new \LogicException(sprintf(
                 'Cannot normalize object "%s" because the injected serializer is not a normalizer.',
-                $object
+                get_class($object)
             ));
         }
 
