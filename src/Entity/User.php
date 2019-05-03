@@ -66,6 +66,7 @@ class User implements UserInterface
     const ROLE_SUPERADMIN = 'ROLE_SUPERADMIN';
 
     const DEFAULT_ROLES = [self::ROLE_COMMENTATOR];
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -73,7 +74,6 @@ class User implements UserInterface
      * @Groups({"get"})
      */
     private $id;
-
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"get", "post", "get-comment-with-author", "get-blog-post-with-author"})
@@ -81,7 +81,6 @@ class User implements UserInterface
      * @Assert\Length(min="6", max="255", groups={"post"})
      */
     private $username;
-
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"get", "post", "put", "get-comment-with-author", "get-blog-post-with-author"})
@@ -89,7 +88,6 @@ class User implements UserInterface
      * @Assert\Length(min="5", max="255", groups={"post", "put"})
      */
     private $name;
-
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"post", "put", "get-admin", "get-owner"})
@@ -98,8 +96,6 @@ class User implements UserInterface
      * @Assert\Length(min="6", max="255", groups={"post", "put"})
      */
     private $email;
-
-
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"post"})
@@ -111,7 +107,6 @@ class User implements UserInterface
      *
      */
     private $password;
-
     /**
      * @Assert\NotBlank(groups={"post"})
      * @Groups({"post"})
@@ -122,8 +117,6 @@ class User implements UserInterface
      * )
      */
     private $retypedPassword;
-
-
     /**
      * @Groups({"put-reset-password"})
      * @Assert\NotBlank()
@@ -134,7 +127,6 @@ class User implements UserInterface
      *
      */
     private $newPassword;
-
     /**
      * @Assert\NotBlank()
      * @Groups({"put-reset-password"})
@@ -144,14 +136,12 @@ class User implements UserInterface
      * )
      */
     private $newRetypedPassword;
-
     /**
      * @Groups({"put-reset-password"})
      * @Assert\NotBlank()
      * @UserPassword()
      */
     private $oldPassword;
-
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\BlogPost", mappedBy="author")
      * @Groups({"get"})
@@ -171,12 +161,22 @@ class User implements UserInterface
      * @ORM\Column(type="integer", nullable=true)
      */
     private $passwordChangeDate;
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $enabled;
+    /**
+     * @ORM\Column(type="string", length=40, nullable=true)
+     */
+    private $confirmationToken;
 
     public function __construct()
     {
         $this->posts = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->roles = self::DEFAULT_ROLES;
+        $this->enabled = false;
+        $this->confirmationToken = null;
     }
 
     public function getId(): ?int
@@ -312,6 +312,30 @@ class User implements UserInterface
     public function setPasswordChangeDate($passwordChangeDate): self
     {
         $this->passwordChangeDate = $passwordChangeDate;
+
+        return $this;
+    }
+
+    public function getEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled($enabled): self
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    public function getConfirmationToken(): ?string
+    {
+        return $this->confirmationToken;
+    }
+
+    public function setConfirmationToken($confirmationToken): self
+    {
+        $this->confirmationToken = $confirmationToken;
 
         return $this;
     }
