@@ -21,13 +21,19 @@ class UserRegisterSubscriber implements EventSubscriberInterface
      * @var TokenGenerator
      */
     private $tokenGenerator;
+    /**
+     * @var \Swift_Mailer
+     */
+    private $mailer;
 
     public function __construct(
         UserPasswordEncoderInterface $passwordEncoder,
-        TokenGenerator $tokenGenerator
+        TokenGenerator $tokenGenerator,
+        \Swift_Mailer $mailer
     ) {
         $this->passwordEncoder = $passwordEncoder;
         $this->tokenGenerator = $tokenGenerator;
+        $this->mailer = $mailer;
     }
 
     public static function getSubscribedEvents(): array
@@ -51,5 +57,13 @@ class UserRegisterSubscriber implements EventSubscriberInterface
 
         // Create confirmation token
         $user->setConfirmationToken($this->tokenGenerator->getRandomSecureToken());
+
+        // Send e-mail here...
+        $message = (new \Swift_Message('Hello from API PLATFORM!'))
+            ->setFrom('stud181177@gmail.com')
+            ->setTo('stud181177@gmail.com')
+            ->setBody('Hello, how are you?');
+
+        $this->mailer->send($message);
     }
 }
