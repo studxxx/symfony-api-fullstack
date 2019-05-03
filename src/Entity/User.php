@@ -167,6 +167,10 @@ class User implements UserInterface
      * @Groups({"get-admin", "get-owner"})
      */
     private $roles;
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $passwordChangeDate;
 
     public function __construct()
     {
@@ -298,5 +302,17 @@ class User implements UserInterface
     public function setOldPassword($oldPassword): void
     {
         $this->oldPassword = $oldPassword;
+    }
+
+    public function getPasswordChangeDate(): int
+    {
+        return $this->passwordChangeDate;
+    }
+
+    public function setPasswordChangeDate($passwordChangeDate): self
+    {
+        $this->passwordChangeDate = $passwordChangeDate;
+
+        return $this;
     }
 }
