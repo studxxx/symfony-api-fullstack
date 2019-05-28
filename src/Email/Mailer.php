@@ -31,10 +31,10 @@ class Mailer
             ]
         );
 
-        $message = (new \Swift_Message('Hello from API PLATFORM!'))
+        $message = (new \Swift_Message('Please confirm your account!'))
             ->setFrom('stud181177@gmail.com')
             ->setTo($user->getEmail())
-            ->setBody($body);
+            ->setBody($body, 'text/html');
 
         $this->mailer->send($message);
     }
