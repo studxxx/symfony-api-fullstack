@@ -44,20 +44,17 @@ class BlogPost implements AuthoredEntityInterface, PublishedDateEntityInterface
      * @Groups({"get-blog-post-with-author"})
      */
     private $id;
-
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
      * @Groups({"post", "get-blog-post-with-author"})
      */
     private $title;
-
     /**
      * @ORM\Column(type="datetime")
      * @Groups({"get-blog-post-with-author"})
      */
     private $published;
-
     /**
      * @ORM\Column(type="text")
      * @Assert\NotBlank()
@@ -65,31 +62,36 @@ class BlogPost implements AuthoredEntityInterface, PublishedDateEntityInterface
      * @Groups({"post", "get-blog-post-with-author"})
      */
     private $content;
-
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="posts")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"get-blog-post-with-author"})
      */
     private $author;
-
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\NotBlank()
      * @Groups({"post", "get-blog-post-with-author"})
      */
     private $slug;
-
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="blogPost")
      * @ApiSubresource()
      * @Groups({"get-blog-post-with-author"})
      */
     private $comments;
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Image")
+     * @ORM\JoinTable()
+     * @ApiSubresource()
+     * @Groups({"post", "get-blog-post-with-author"})
+     */
+    private $images;
 
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->images = new ArrayCollection();
     }
 
 
@@ -161,5 +163,20 @@ class BlogPost implements AuthoredEntityInterface, PublishedDateEntityInterface
     public function getComments(): Collection
     {
         return $this->comments;
+    }
+
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(Image $image): void
+    {
+        $this->images->add($image);
+    }
+
+    public function removeImage(Image $image): void
+    {
+        $this->images->removeElement($image);
     }
 }
