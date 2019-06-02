@@ -308,7 +308,7 @@ class User implements UserInterface
         $this->oldPassword = $oldPassword;
     }
 
-    public function getPasswordChangeDate(): int
+    public function getPasswordChangeDate(): ?int
     {
         return $this->passwordChangeDate;
     }
@@ -342,5 +342,10 @@ class User implements UserInterface
         $this->confirmationToken = $confirmationToken;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->name;
     }
 }
