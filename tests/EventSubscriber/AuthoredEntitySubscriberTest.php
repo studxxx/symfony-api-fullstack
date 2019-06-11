@@ -34,10 +34,18 @@ class AuthoredEntitySubscriberTest extends TestCase
         $tokenStorageMock = $this->getTokenStorageMock();
         $eventMock = $this->getEventMock('POST', $entityMock);
 
+        (new AuthoredEntitySubscriber($tokenStorageMock))
+            ->getAuthenticatedUser($eventMock);
+
         $entityMock = $this->getEntityMock('NotExisting', false);
+
+        $tokenStorageMock = $this->getTokenStorageMock();
+        $eventMock = $this->getEventMock('GET', $entityMock);
 
         (new AuthoredEntitySubscriber($tokenStorageMock))
             ->getAuthenticatedUser($eventMock);
+
+        $entityMock = $this->getEntityMock(BlogPost::class, false);
 
         $tokenStorageMock = $this->getTokenStorageMock();
         $eventMock = $this->getEventMock('GET', $entityMock);
