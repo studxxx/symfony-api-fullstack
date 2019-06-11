@@ -66,6 +66,13 @@
         }
     },
     "require-dev": {
+        "behat/behat": "^3.5",
+        "behat/mink": "dev-master",
+        "behat/mink-extension": "^2.3",
+        "behat/symfony2-extension": "2.1.5",
+        "behat/mink-browserkit-driver": "dev-master",
+        "behatch/contexts": "dev-master",
+        "coduo/php-matcher": "dev-master",
         "doctrine/doctrine-fixtures-bundle": "^3.1",
         "fzaninotto/faker": "^1.8",
         "symfony/maker-bundle": "^1.11",
