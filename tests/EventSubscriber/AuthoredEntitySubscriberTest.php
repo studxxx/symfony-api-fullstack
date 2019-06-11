@@ -27,31 +27,30 @@ class AuthoredEntitySubscriberTest extends TestCase
         );
     }
 
-    public function testSetAuthorCall()
+    /**
+     * @param string $className
+     * @param bool $shouldCallSetAuthor
+     * @param string $method
+     * @dataProvider providerSetAuthorCall
+     */
+    public function testSetAuthorCall(string $className, bool $shouldCallSetAuthor, string $method)
     {
-        $entityMock = $this->getEntityMock(BlogPost::class, true);
+        $entityMock = $this->getEntityMock($className, $shouldCallSetAuthor);
 
         $tokenStorageMock = $this->getTokenStorageMock();
-        $eventMock = $this->getEventMock('POST', $entityMock);
+        $eventMock = $this->getEventMock($method, $entityMock);
 
         (new AuthoredEntitySubscriber($tokenStorageMock))
             ->getAuthenticatedUser($eventMock);
+    }
 
-        $entityMock = $this->getEntityMock('NotExisting', false);
-
-        $tokenStorageMock = $this->getTokenStorageMock();
-        $eventMock = $this->getEventMock('GET', $entityMock);
-
-        (new AuthoredEntitySubscriber($tokenStorageMock))
-            ->getAuthenticatedUser($eventMock);
-
-        $entityMock = $this->getEntityMock(BlogPost::class, false);
-
-        $tokenStorageMock = $this->getTokenStorageMock();
-        $eventMock = $this->getEventMock('GET', $entityMock);
-
-        (new AuthoredEntitySubscriber($tokenStorageMock))
-            ->getAuthenticatedUser($eventMock);
+    public function providerSetAuthorCall(): array
+    {
+        return [
+            [BlogPost::class, true, 'POST'],
+            [BlogPost::class, false, 'GET'],
+            ['NotExisting', false, 'POST'],
+        ];
     }
 
     /**
@@ -104,9 +103,11 @@ class AuthoredEntitySubscriberTest extends TestCase
     }
 
     /**
+     * @param string $className
+     * @param bool $shouldCallSetAuthor
      * @return MockObject|BlogPost
      */
-    private function getEntityMock($className, bool $shouldCallSetAuthor): MockObject
+    private function getEntityMock(string $className, bool $shouldCallSetAuthor): MockObject
     {
         $entityMock = $this->getMockBuilder($className)
             ->setMethods(['setAuthor'])
