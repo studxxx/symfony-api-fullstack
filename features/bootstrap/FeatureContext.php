@@ -1,48 +1,58 @@
 <?php
 
+use App\DataFixtures\AppFixtures;
 use Behat\Behat\Context\Context;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\KernelInterface;
+use Behatch\Context\RestContext;
+use Behatch\HttpCall\Request;
+use Coduo\PHPMatcher\Factory\SimpleFactory;
+use Coduo\PHPMatcher\Matcher;
+use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Tools\SchemaTool;
 
-/**
- * This context class contains the definitions of the steps used by the demo 
- * feature file. Learn how to get started with Behat and BDD on Behat's website.
- * 
- * @see http://behat.org/en/latest/quick_start.html
- */
-class FeatureContext implements Context
+class FeatureContext extends RestContext
 {
     /**
-     * @var KernelInterface
+     * @var AppFixtures
      */
-    private $kernel;
-
+    private $fixtures;
     /**
-     * @var Response|null
+     * @var Matcher
      */
-    private $response;
+    private $matcher;
+    /**
+     * @var EntityManagerInterface
+     */
+    private $em;
 
-    public function __construct(KernelInterface $kernel)
+    public function __construct(Request $request, AppFixtures $fixtures, EntityManagerInterface $em)
     {
-        $this->kernel = $kernel;
+        parent::__construct($request);
+        $this->fixtures = $fixtures;
+        $this->matcher = (new SimpleFactory())->createMatcher();
+        $this->em = $em;
     }
 
     /**
-     * @When a demo scenario sends a request to :path
+     * @BeforeScenario @createSchema
+     * @throws \Doctrine\ORM\Tools\ToolsException
      */
-    public function aDemoScenarioSendsARequestTo(string $path)
+    public function createSchema()
     {
-        $this->response = $this->kernel->handle(Request::create($path, 'GET'));
-    }
+        // Get entity metadata
+        $classes = $this->em->getMetadataFactory()->getAllMetadata();
 
-    /**
-     * @Then the response should be received
-     */
-    public function theResponseShouldBeReceived()
-    {
-        if ($this->response === null) {
-            throw new \RuntimeException('No response received');
-        }
+        // Drop and create schema
+        $schemaTool = new SchemaTool($this->em);
+        $schemaTool->dropSchema($classes);
+        $schemaTool->createSchema($classes);
+
+        // Load fixtures... and execute
+        $purger = new ORMPurger($this->em);
+        $fixturesExecutor = new ORMExecutor($this->em, $purger);
+        $fixturesExecutor->execute([
+            $this->fixtures
+        ]);
     }
 }
